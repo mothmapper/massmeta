@@ -1,9 +1,11 @@
 /// How much time (in seconds) is assumed to pass while assuming air. Used to scale overpressure/overtemp damage when assuming air.
 #define ASSUME_AIR_DT_FACTOR 1
-/// Multiplies the pressure of assembly bomb explosions before it's put through THE LOGARITHM
-#define ASSEMBLY_BOMB_COEFFICIENT 0.5
-/// Base of the logarithmic function used to calculate assembly bomb explosion size
-#define ASSEMBLY_BOMB_BASE 2.7
+//MASSMETA EDIT REMOVAL BEGIN - STR
+	/*/// Multiplies the pressure of assembly bomb explosions before it's put through THE LOGARITHM
+	#define ASSEMBLY_BOMB_COEFFICIENT 0.5
+	/// Base of the logarithmic function used to calculate assembly bomb explosion size
+	#define ASSEMBLY_BOMB_BASE 2.7*/
+//MASSMETA EDIT REMOVAL END
 
 /**
  * # Gas Tank
@@ -52,10 +54,12 @@
 	var/list/reaction_info
 	/// Mob that is currently breathing from the tank.
 	var/mob/living/carbon/breathing_mob = null
-	/// Attached assembly, can either detonate the tank or release its contents when receiving a signal
+//MASSMETA EDIT REMOVAL BEGIN - STR
+	/*/// Attached assembly, can either detonate the tank or release its contents when receiving a signal
 	var/obj/item/assembly_holder/tank_assembly
 	/// Whether or not it will try to explode when it receives a signal
-	var/bomb_status = FALSE
+	var/bomb_status = FALSE*/
+//MASSMETA EDIT REMOVAL END
 
 /// Closes the tank if dropped while open.
 /datum/armor/item_tank
@@ -131,16 +135,20 @@
 /obj/item/tank/Destroy()
 	STOP_PROCESSING(SSobj, src)
 	air_contents = null
-	QDEL_NULL(tank_assembly)
+//MASSMETA EDIT REMOVAL BEGIN - STR
+	/*QDEL_NULL(tank_assembly)*/
+//MASSMETA EDIT REMOVAL END
 	return ..()
 
-/obj/item/tank/update_overlays()
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*/obj/item/tank/update_overlays()
 	. = ..()
 	if(tank_assembly)
 		. += tank_assembly.icon_state
 		. += tank_assembly.overlays
 		. += "bomb_assembly"
-
+*/
+//MASSMETA EDIT REMOVAL END
 /obj/item/tank/examine(mob/user)
 	var/obj/icon = src
 	. = ..()
@@ -171,8 +179,10 @@
 
 	. += span_notice("It feels [descriptive].")
 
-	if(tank_assembly)
-		. += span_warning("There is some kind of device [EXAMINE_HINT("rigged")] to the tank!")
+//MASSMETA EDIT REMOVAL BEGIN - STR
+	/*if(tank_assembly)
+		. += span_warning("There is some kind of device [EXAMINE_HINT("rigged")] to the tank!")*/
+//MASSMETA EDIT REMOVAL END
 
 /obj/item/tank/atom_deconstruct(disassembled = TRUE)
 	var/atom/location = loc
@@ -195,11 +205,15 @@
 /obj/item/tank/attackby(obj/item/attacking_item, mob/user, params)
 	add_fingerprint(user)
 	if(istype(attacking_item, /obj/item/assembly_holder))
-		if(tank_assembly)
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*	if(tank_assembly)
 			balloon_alert(user, "something already attached!")
-			return ITEM_INTERACT_BLOCKING
+			return ITEM_INTERACT_BLOCKING*/
+//MASSMETA EDIT REMOVAL END
 		bomb_assemble(attacking_item, user)
-		return ITEM_INTERACT_SUCCESS
+		return TRUE
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*		return ITEM_INTERACT_SUCCESS
 	return ..()
 
 /obj/item/tank/wrench_act(mob/living/user, obj/item/tool)
@@ -218,7 +232,8 @@
 		balloon_alert(user, "bomb armed")
 		log_bomber(user, "welded a single tank bomb,", src, "| Temp: [air_contents.temperature] Pressure: [air_contents.return_pressure()]")
 		add_fingerprint(user)
-		return ITEM_INTERACT_SUCCESS
+		return ITEM_INTERACT_SUCCESS*/
+//MASSMETA EDIT REMOVAL END
 	return ..()
 
 /obj/item/tank/ui_state(mob/user)
@@ -402,7 +417,9 @@
 /obj/item/tank/proc/explosion_information()
 	return list(TANK_RESULTS_REACTION = reaction_info, TANK_RESULTS_MISC = explosion_info)
 
-/obj/item/tank/on_found(mob/finder) //for mousetraps
+/obj/item/tank/proc/ignite() //This happens when a bomb is told to explode
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*/obj/item/tank/on_found(mob/finder) //for mousetraps
 	. = ..()
 	if(tank_assembly)
 		tank_assembly.on_found(finder)
@@ -483,12 +500,20 @@
 		release()
 		return
 
-	// check to make sure it's not already exploding before exploding it
+	// check to make sure it's not already exploding before exploding it */
+//MASSMETA EDIT REMOVAL END
 	if(igniting)
-		CRASH("ignite() called multiple times on [type]")
+		stack_trace("Attempted to ignite a /obj/item/tank multiple times")
+		return //no double ignite
+//MASSMETA EDIT REMOVAL BEGIN - STR
+		/*CRASH("ignite() called multiple times on [type]")*/
+//MASSMETA EDIT REMOVAL END
 	igniting = TRUE
-
+	// This is done in return_air call, but even then it actually makes zero sense, this tank is going to be deleted
+	// before ever getting a chance to process.
+	//START_PROCESSING(SSobj, src)
 	var/datum/gas_mixture/our_mix = return_air()
+
 	our_mix.assert_gases(/datum/gas/plasma, /datum/gas/oxygen)
 	var/fuel_moles = our_mix.gases[/datum/gas/plasma][MOLES] + our_mix.gases[/datum/gas/oxygen][MOLES]/6
 	our_mix.garbage_collect()
@@ -497,14 +522,16 @@
 
 	var/turf/ground_zero = get_turf(loc)
 
-	/// Used to determine what the temperature of the hotspot when it isn't able to explode
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*	/// Used to determine what the temperature of the hotspot when it isn't able to explode
 	var/igniter_temperature = 0
 	for(var/obj/item/assembly/igniter/firestarter in tank_assembly.assemblies)
 		igniter_temperature = max(igniter_temperature, firestarter.heat)
 
 	if(!igniter_temperature)
 		CRASH("[type] called ignite() without any igniters attached")
-
+*/
+//MASSMETA EDIT REMOVAL END
 	if(bomb_mixture.temperature > (T0C + 400))
 		strength = (fuel_moles/15)
 
@@ -518,7 +545,10 @@
 			explosion(ground_zero, devastation_range = -1, light_impact_range = 1, flash_range = 2, explosion_cause = src)
 		else
 			ground_zero.assume_air(bomb_mixture)
-			ground_zero.hotspot_expose(igniter_temperature, 125)
+			ground_zero.hotspot_expose(1000, 125)
+//MASSMETA EDIT REMOVAL BEGIN - STR
+			/*ground_zero.hotspot_expose(igniter_temperature, 125)*/
+//MASSMETA EDIT REMOVAL END
 
 	else if(bomb_mixture.temperature > (T0C + 250))
 		strength = (fuel_moles/20)
@@ -529,8 +559,11 @@
 			explosion(ground_zero, devastation_range = -1, light_impact_range = 1, flash_range = 2, explosion_cause = src)
 		else
 			ground_zero.assume_air(bomb_mixture)
-			ground_zero.hotspot_expose(igniter_temperature, 125)
+			ground_zero.hotspot_expose(1000, 125)
 
+//MASSMETA EDIT REMOVAL BEGIN - STR
+			/*ground_zero.hotspot_expose(igniter_temperature, 125)*/
+//MASSMETA EDIT REMOVAL END
 	else if(bomb_mixture.temperature > (T0C + 100))
 		strength = (fuel_moles/25)
 
@@ -538,24 +571,32 @@
 			explosion(ground_zero, devastation_range = -1, light_impact_range = round(strength,1), flash_range = round(strength*3,1), explosion_cause = src)
 		else
 			ground_zero.assume_air(bomb_mixture)
-			ground_zero.hotspot_expose(igniter_temperature, 125)
+			ground_zero.hotspot_expose(1000, 125)
 
 	else
 		ground_zero.assume_air(bomb_mixture)
-		ground_zero.hotspot_expose(igniter_temperature, 125)
+		ground_zero.hotspot_expose(1000, 125)
 
+	if(master)
+		qdel(master)
 	qdel(src)
 
-/// Releases air stored in the tank. Called when signaled without being welded, or when ignited without enough pressure to explode.
-/obj/item/tank/proc/release()
+/obj/item/tank/proc/release() //This happens when the bomb is not welded. Tank contents are just spat out.
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*/// Releases air stored in the tank. Called when signaled without being welded, or when ignited without enough pressure to explode.
+/obj/item/tank/proc/release()*/
+//MASSMETA EDIT REMOVAL END
 	var/datum/gas_mixture/our_mix = return_air()
 	var/datum/gas_mixture/removed = remove_air(our_mix.total_moles())
 	var/turf/T = get_turf(src)
 	if(!T)
 		return
-	log_atmos("[type] released its contents of ", removed)
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*	log_atmos("[type] released its contents of ", removed)*/
+//MASSMETA EDIT REMOVAL END
 	T.assume_air(removed)
-
-#undef ASSEMBLY_BOMB_BASE
-#undef ASSEMBLY_BOMB_COEFFICIENT
+//MASSMETA EDIT REMOVAL BEGIN - STR
+/*#undef ASSEMBLY_BOMB_BASE
+#undef ASSEMBLY_BOMB_COEFFICIENT*/
+//MASSMETA EDIT REMOVAL END
 #undef ASSUME_AIR_DT_FACTOR
