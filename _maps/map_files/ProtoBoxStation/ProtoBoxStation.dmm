@@ -37360,7 +37360,7 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/structure/cable,
 /obj/structure/table/wood,
-/obj/effect/spawner/random/food_or_drink/snack,
+/obj/item/toy/plush/explosive,
 /turf/open/floor/iron/checker,
 /area/station/science/breakroom)
 "dQL" = (

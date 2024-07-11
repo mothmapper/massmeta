@@ -252,6 +252,7 @@
 		/obj/item/toy/plush/beeplushie,
 		/obj/item/toy/plush/moth,
 		/obj/item/toy/plush/pkplush,
+		/obj/item/toy/plush/explosive
 	)
 
 /obj/effect/spawner/random/entertainment/plushie_delux
@@ -279,6 +280,7 @@
 		/obj/item/toy/plush/bubbleplush = 2,
 		/obj/item/toy/plush/ratplush = 2,
 		/obj/item/toy/plush/narplush = 2,
+		/obj/item/toy/plush/explosive = 2,
 	)
 
 /obj/effect/spawner/random/entertainment/colorful_grenades

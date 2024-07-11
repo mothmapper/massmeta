@@ -13,6 +13,7 @@
 
 // BEGIN_INCLUDE
 #include "features\additional_circuit\includes.dm"
+#include "features\explushie\includes.dm"
 #include "features\hardsuits\includes.dm"
 #include "features\kvass\includes.dm"
 #include "features\smites\includes.dm"
@@ -105,3 +106,6 @@
 //Testicular_torsion wizard
 #include "code\modules\spells\spell_types\touch\testicular_torsion.dm"
 #include "code\modules\antags\wizard\equipment\spellbook_entries\offensive.dm"
+
+//mothymothy
+#include "code\game\objects\items\plushes.dm"
