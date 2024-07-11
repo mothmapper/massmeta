@@ -252,7 +252,9 @@
 		/obj/item/toy/plush/beeplushie,
 		/obj/item/toy/plush/moth,
 		/obj/item/toy/plush/pkplush,
+//MASSMETA ADDITION BEGIN
 		/obj/item/toy/plush/explosive
+//MASSMETA ADDITION END
 	)
 
 /obj/effect/spawner/random/entertainment/plushie_delux
@@ -280,7 +282,9 @@
 		/obj/item/toy/plush/bubbleplush = 2,
 		/obj/item/toy/plush/ratplush = 2,
 		/obj/item/toy/plush/narplush = 2,
+//MASSMETA ADDITION BEGIN
 		/obj/item/toy/plush/explosive = 2,
+//MASSMETA ADDITION END
 	)
 
 /obj/effect/spawner/random/entertainment/colorful_grenades
